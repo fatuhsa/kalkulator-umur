@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Age Calculator App</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "Poppins";
+        src: url("assets/fonts/Poppins-Bold.ttf") format("truetype");
+        font-weight: Bold;
+        font-style: normal;
+      }
+
+      *,
+      body {
+        font-family: "Poppins", sans-serif;
+        box-sizing: border-box;
+      }
+
+      .dark-mode {
+        background-color: #1a202c; 
+        color: #e2e8f0; 
+      }
+
+      .dark-mode .bg-white {
+        background-color: #2d3748; 
+      }
+
+      .dark-mode .border-gray-300 {
+        border-color: #4a5568; 
+      }
+
+      .no-theme-change {
+        background-color: #ffffff; 
+        border-color: #d1d5db; 
+        color: #000000; 
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 flex flex-col min-h-screen transition-colors duration-300 select-none"
+  >
+    <button id="toggle-theme" class="p-2 m-4 bg-gray-800 text-white rounded-md">
+      Toggle Dark Mode
+    </button>
+    <div class="input bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+      <label for="date" class="block text-lg font-bold mb-2">
+        Select Your Birthdate
+      </label>
+      <input
+        type="date"
+        name="date"
+        id="date"
+        class="border border-gray-300 p-2 rounded-md mb-4 w-full no-theme-change"
+      />
+      <div id="age">
+        <div id="year" class="text-lg font-medium mb-1"></div>
+        <div id="month" class="text-lg font-medium mb-1"></div>
+        <div id="days" class="text-lg font-medium"></div>
+      </div>
+    </div>
+    <script>
+      // Set default date to today
+      const setDefaultDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+        const day = String(today.getDate()).padStart(2, "0");
+        const defaultDate = `${year}-${month}-${day}`;
+        document.getElementById("date").value = defaultDate;
+      };
+
+      const gei = id => document.getElementById(id);
+
+      function calculateAge() {
+        const birthDate = new Date(gei("date").value);
+        const today = new Date();
+        const age = gei("age");
+        const tahun = gei("year");
+        const bulan = gei("month");
+        const hari = gei("days");
+
+        if (isNaN(birthDate.getTime())) {
+          age.textContent = "Please select a valid date.";
+          return;
+        }
+
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        let days = today.getDate() - birthDate.getDate();
+
+        // Adjust for negative days
+        if (days < 0) {
+          months--;
+          const lastMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() - 1,
+            birthDate.getDate()
+          );
+          days += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); // Days in last month
+        }
+
+        // Adjust for negative months
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+
+        tahun.textContent = `${years} years`;
+        bulan.textContent = `${months} months`;
+        hari.textContent = `${days} days`;
+      }
+
+      document.getElementById("date").addEventListener("input", calculateAge);
+
+      // Toggle dark mode
+      const toggleThemeButton = document.getElementById("toggle-theme");
+      toggleThemeButton.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        toggleThemeButton.textContent = document.body.classList.contains(
+          "dark-mode"
+        )
+          ? "Toggle Light Mode"
+          : "Toggle Dark Mode";
+      });
+
+      
+      setDefaultDate();
+    </script>
+  </body>
+</html>
